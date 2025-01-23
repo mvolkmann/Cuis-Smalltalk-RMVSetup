@@ -10,6 +10,7 @@ Currently this installs the following packages:
 - Cuis-Smalltalk-FindByExample
 - Cuis-Smalltalk-SearchBrowser
 - Cuis-Smalltalk-Switch
+- Cuis-Smalltalk-Vim
 - Cuis-Smalltalk-WindowManager
 
 It also sets the background image to the balloon image at
