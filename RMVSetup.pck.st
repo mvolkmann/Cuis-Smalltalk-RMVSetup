@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 2 February 2025 at 6:45:50 pm'!
+'From Cuis7.3 [latest update: #7044] on 3 February 2025 at 8:47:19 am'!
 'Description '!
-!provides: 'RMVSetup' 1 7!
+!provides: 'RMVSetup' 1 8!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -33,30 +33,47 @@ initialize
 	stream := filePath asFileEntry readStream.
 	self runningWorld backgroundImageData: stream binary contentsOfEntireFile.! !
 
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/2/2025 18:44:35'!
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/3/2025 08:43:55'!
 openInWorld: aWorld
 	"This msg and its callees result in the window being activeOnlyOnTop"
-	| frameRect position windowExtent worldExtent |
+	| position windowExtent windowHeight windowRect windowWidth worldExtent worldHeight worldWidth |
 	
 	windowExtent := self morphExtent.
 	"300@200 is the default assigned in the SystemWindow instance method initialize."
 	windowExtent = `300 @ 200` ifTrue: [
-		frameRect := self initialFrameIn: aWorld.
-		windowExtent := frameRect extent.
+		windowRect := self initialFrameIn: aWorld.
+		windowExtent := windowRect extent.
 	].
 	self morphExtent: windowExtent.
+	windowWidth := windowExtent x.
+	windowHeight := windowExtent y.
 		
-	position := Smalltalk at: #worldClickPosition.
 	worldExtent := aWorld morphExtent.
+	worldWidth := worldExtent x.
+	worldHeight := worldExtent y.
 	
-	"Move left if hanging off right side of world"
-	position x + windowExtent x > worldExtent x ifTrue: [
-		position := Point x: (worldExtent  x - windowExtent x) y: position y
+	position := Smalltalk at: #worldClickPosition.
+	
+	"Handle case where window is wider than World."
+	windowWidth > worldWidth ifTrue: [
+		self morphExtent: (Point x: worldWidth y: windowHeight).
+		position := Point x: 0 y: position y.
+	].
+	
+	"Handle case where window is taller than World."
+	windowHeight > worldHeight ifTrue: [
+		self morphExtent: (Point x: windowWidth y: worldHeight).
+		position := Point x: position x y: 0.
 	].
 
-	"Move up if hanging off bottom of world."
-	position y + windowExtent y > worldExtent y ifTrue: [
-		position := Point x: position x y: (worldExtent y - windowExtent y)
+	"If window extends past right side of world, move it left."
+	position x + windowWidth > worldWidth ifTrue: [
+		position := Point x: (worldWidth - windowWidth) y: position y
+	].
+
+	"If window extends past bottom side of world, move it up."
+	position y + windowHeight > worldHeight ifTrue: [
+		position := Point x: position x y: (worldHeight - windowHeight)
 	].
 
 	aWorld addMorph: self position: position.! !
