@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 4 February 2025 at 3:10:42 pm'!
+'From Cuis7.3 [latest update: #7044] on 4 February 2025 at 6:37:37 pm'!
 'Description '!
-!provides: 'RMVSetup' 1 12!
+!provides: 'RMVSetup' 1 13!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -33,7 +33,7 @@ initialize
 	stream := filePath asFileEntry readStream.
 	self runningWorld backgroundImageData: stream binary contentsOfEntireFile.! !
 
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/4/2025 15:10:19'!
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/4/2025 18:37:28'!
 openInWorld: aWorld
 	"This msg and its callees result in the window being activeOnlyOnTop."
 	| fromMenu sender |
@@ -60,19 +60,22 @@ openInWorld: aWorld
 			self morphExtent: windowExtent.
 			windowWidth := windowExtent x.
 			windowHeight := windowExtent y.
+			windowHeight logAs: 'windowHeight'.
 				
 			worldExtent := aWorld morphExtent.
 			worldWidth := worldExtent x.
 			worldHeight := worldExtent y.
+			worldHeight logAs: 'worldHeight'.
 			
 			position := Smalltalk at: #worldClickPosition.
 			
+			"It seems most windows automatically choose their size
+			based on the World size, so this code isn't really necessary."
 			"Handle case where window is wider than World."
 			windowWidth > worldWidth ifTrue: [
 				self morphExtent: (Point x: worldWidth y: windowHeight).
 				position := Point x: 0 y: position y.
-			].
-			
+			].		
 			"Handle case where window is taller than World."
 			windowHeight > worldHeight ifTrue: [
 				self morphExtent: (Point x: windowWidth y: worldHeight).
@@ -89,6 +92,7 @@ openInWorld: aWorld
 				position := Point x: position x y: (worldHeight - windowHeight)
 			].
 		
+			position logAs: 'position'.
 			aWorld addMorph: self position: position.
 		]
 		ifFalse: [
