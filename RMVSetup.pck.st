@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 4 February 2025 at 6:37:37 pm'!
+'From Cuis7.3 [latest update: #7045] on 9 February 2025 at 3:17:07 pm'!
 'Description '!
-!provides: 'RMVSetup' 1 13!
+!provides: 'RMVSetup' 1 15!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -32,84 +32,4 @@ initialize
 	filePath := '../Cuis-Smalltalk-RMVSetup/altitude1600.jpg'.
 	stream := filePath asFileEntry readStream.
 	self runningWorld backgroundImageData: stream binary contentsOfEntireFile.! !
-
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/4/2025 18:37:28'!
-openInWorld: aWorld
-	"This msg and its callees result in the window being activeOnlyOnTop."
-	| fromMenu sender |
-	
-	"Determine whether this method was invoked from a menu selection
-	and capture the HandMorph if it is in the sender stack."
-	fromMenu := false.
-	sender := thisContext sender.
-	[ sender notNil and: [ fromMenu not ] ] whileTrue: [
-		fromMenu := sender receiver class = MenuMorph.
-		sender := sender sender.
-	].
-	
-	fromMenu
-		ifTrue: [	
-			| position windowExtent windowHeight windowRect windowWidth worldExtent worldHeight worldWidth |
-			
-			windowExtent := self morphExtent.
-			"300@200 is the default assigned in the SystemWindow instance method initialize."
-			windowExtent = `300 @ 200` ifTrue: [
-				windowRect := self initialFrameIn: aWorld.
-				windowExtent := windowRect extent.
-			].
-			self morphExtent: windowExtent.
-			windowWidth := windowExtent x.
-			windowHeight := windowExtent y.
-			windowHeight logAs: 'windowHeight'.
-				
-			worldExtent := aWorld morphExtent.
-			worldWidth := worldExtent x.
-			worldHeight := worldExtent y.
-			worldHeight logAs: 'worldHeight'.
-			
-			position := Smalltalk at: #worldClickPosition.
-			
-			"It seems most windows automatically choose their size
-			based on the World size, so this code isn't really necessary."
-			"Handle case where window is wider than World."
-			windowWidth > worldWidth ifTrue: [
-				self morphExtent: (Point x: worldWidth y: windowHeight).
-				position := Point x: 0 y: position y.
-			].		
-			"Handle case where window is taller than World."
-			windowHeight > worldHeight ifTrue: [
-				self morphExtent: (Point x: windowWidth y: worldHeight).
-				position := Point x: position x y: 0.
-			].
-
-			"If window extends past right side of world, move it left."
-			position x + windowWidth > worldWidth ifTrue: [
-				position := Point x: (worldWidth - windowWidth) y: position y
-			].
-
-			"If window extends past bottom side of world, move it up."
-			position y + windowHeight > worldHeight ifTrue: [
-				position := Point x: position x y: (worldHeight - windowHeight)
-			].
-		
-			position logAs: 'position'.
-			aWorld addMorph: self position: position.
-		]
-		ifFalse: [
-			| frameRect hand position |
-			
-			frameRect := self initialFrameIn: aWorld.
-			self morphExtent: frameRect extent.
-			hand := self runningWorld activeHand.
-			position := hand
-				ifNil: [ frameRect topLeft ]
-				ifNotNil: [ hand location translation ].
-			aWorld addMorph: self position: position.
-		].! !
-
-!WorldMorph methodsFor: '*RMVSetup' stamp: 'RMV 2/2/2025 16:51:07'!
-click: aMouseButtonEvent localPosition: localEventPosition
-
-	Smalltalk at: #worldClickPosition put: localEventPosition.
-	^self mouseButton2Activity.! !
 RMVSetup initialize!
