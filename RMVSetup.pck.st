@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 14 February 2025 at 10:49:24 am'!
+'From Cuis7.3 [latest update: #7044] on 15 February 2025 at 4:28:36 pm'!
 'Description '!
-!provides: 'RMVSetup' 1 34!
+!provides: 'RMVSetup' 1 37!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -38,12 +38,12 @@ initialize
 	
 	self openWindows.! !
 
-!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/14/2025 10:48:46'!
+!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/15/2025 16:28:32'!
 openWindows
 	| browser |
 	
 	browser := Browser open
-		moveTo: #worldCenter;
+		moveTo: #worldXCenter;
 		moveTo: #worldTop;
 		fullHeight.
 
@@ -53,15 +53,19 @@ openWindows
 		fullHeightMinusTaskbar.
 	
 	Workspace open
+		percentHeight: 0.7;
 		moveRightOf: browser;
-		moveTo: #worldTop;
-		percentHeight: 0.7.
+		moveTo: #worldTop.
 
 	Transcript open
+		percentHeight: 0.3;
 		moveRightOf: browser;
-		moveTo: #worldBottom;
-		percentHeight: 0.3.
+		moveTo: #worldBottom.
 	Transcript clearAll.
+	
+	MessageNames open
+		moveTo: #worldRight;
+		moveTo: #worldTop.
 
 	CodePackageList open
 		moveTo: #worldLeft;
@@ -108,7 +112,7 @@ moveRightOf: aWindow
 	newY := position y.	
 	self morphPosition: newX @ newY.! !
 
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:08:48'!
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/15/2025 16:21:58'!
 moveTo: aSymbol
 	| newX newY taskbarHeight world worldHeight worldWidth |
 
@@ -120,12 +124,13 @@ moveTo: aSymbol
 	newX := aSymbol caseOf: {
 		[ #worldLeft ] -> [ 0 ].
 		[ #worldRight ] -> [ worldWidth - extent x ].
-		[ #worldCenter ] -> [ (worldWidth / 2) - (extent x / 2) ].
+		[ #worldXCenter ] -> [ (worldWidth / 2) - (extent x / 2) ].
 	} otherwise: [ location translation x ].
 	
 	newY := aSymbol caseOf: {
 		[ #worldTop ] -> [ 0 ].
 		[ #worldBottom ] -> [ worldHeight - extent y ].
+		[ #worldYCenter ] -> [ (worldHeight / 2) - (extent y / 2) ].
 		[ #taskbarTop ] -> [ worldHeight - taskbarHeight - self morphExtent y ].
 	} otherwise: [ location translation y ].
 	
@@ -140,4 +145,15 @@ percentHeight: aNumber
 	
 	world := UISupervisor ui.
 	self morphExtent: (self morphExtent x) @ (world morphExtent y * aNumber).! !
+
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/15/2025 16:26:30'!
+percentWidth: aNumber
+	| world |
+
+	aNumber <= 0 ifTrue: [ Error signal: 'aNumber cannot be zero or less.' ].
+	aNumber > 1 ifTrue: [ Error signal: 'aNumber cannot be greater than one.' ].
+	
+	world := UISupervisor ui.
+	self morphExtent: (world morphExtent x * aNumber) @ (self morphExtent y)
+! !
 RMVSetup initialize!
