@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 11:17:10 am'!
+'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 11:22:00 am'!
 'Description '!
-!provides: 'RMVSetup' 1 43!
+!provides: 'RMVSetup' 1 44!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -63,17 +63,19 @@ initialize
 	
 	self openWindows.! !
 
-!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/16/2025 11:17:05'!
+!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/16/2025 11:21:16'!
 openWindows
+	"Open my preferred initial windows in the locations and sizes I prefer.
+	Specify size before location because the location calculation can depend on the size."
 	| browser |
 	
 	browser := Browser open
-		x: #worldCenter y: #worldTop;
-		fullHeight.
+		fullHeight;
+		x: #worldCenter y: #worldTop.
 
 	Browser open
-		x: #leftOf -> browser y: #worldTop;
-		fullHeightMinusTaskbar.
+		fullHeightMinusTaskbar;
+		x: #leftOf -> browser y: #worldTop.
 	
 	Workspace open
 		percentHeight: 0.7;
