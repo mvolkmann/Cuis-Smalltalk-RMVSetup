@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 15 February 2025 at 4:28:36 pm'!
+'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 11:17:10 am'!
 'Description '!
-!provides: 'RMVSetup' 1 37!
+!provides: 'RMVSetup' 1 43!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -20,6 +20,31 @@ RMVSetup class
 	instanceVariableNames: ''!
 
 
+!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/16/2025 11:16:53'!
+coolDemo
+	| target |
+	
+	target := TextEditor open
+		percentWidth: 0.1;
+		percentHeight: 0.2;
+		x: #worldCenter y: #worldCenter.
+	TextEditor open
+		percentWidth: 0.1;
+		percentHeight: 0.2;
+		x: #leftOf -> target y: #worldCenter.
+	TextEditor open
+		percentWidth: 0.1;
+		percentHeight: 0.2;
+		x: #rightOf -> target y: #worldCenter.
+	TextEditor open
+		percentWidth: 0.1;
+		percentHeight: 0.2;
+		x: #worldCenter y: #topOf -> target.
+	TextEditor open
+		percentWidth: 0.1;
+		percentHeight: 0.2;
+		x: #worldCenter y: #bottomOf -> target.! !
+
 !RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/13/2025 13:00:46'!
 initialize
 	| filePath stream |
@@ -38,47 +63,41 @@ initialize
 	
 	self openWindows.! !
 
-!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/15/2025 16:28:32'!
+!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/16/2025 11:17:05'!
 openWindows
 	| browser |
 	
 	browser := Browser open
-		moveTo: #worldXCenter;
-		moveTo: #worldTop;
+		x: #worldCenter y: #worldTop;
 		fullHeight.
 
 	Browser open
-		moveLeftOf: browser;
-		moveTo: #worldTop;
+		x: #leftOf -> browser y: #worldTop;
 		fullHeightMinusTaskbar.
 	
 	Workspace open
 		percentHeight: 0.7;
-		moveRightOf: browser;
-		moveTo: #worldTop.
+		x: #rightOf -> browser y: #worldTop.
 
 	Transcript open
 		percentHeight: 0.3;
-		moveRightOf: browser;
-		moveTo: #worldBottom.
+		x: #rightOf -> browser y: #worldBottom.
 	Transcript clearAll.
 	
 	MessageNames open
-		moveTo: #worldRight;
-		moveTo: #worldTop.
+		x: #worldRight y: #worldTop.
 
 	CodePackageList open
-		moveTo: #worldLeft;
-		moveTo: #taskbarTop.
-	
+		x: #worldLeft y: #taskbarTop.
+			
 	browser activateWindow.! !
 
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:29:52'!
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/16/2025 11:04:38'!
 fullHeight
 	| world |
 
 	world := UISupervisor ui.
-	self morphExtent: (self morphExtent x) @ (world morphExtent y).! !
+	self morphExtent: (extent x) @ (world morphExtent y).! !
 
 !SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:30:45'!
 fullHeightMinusTaskbar
@@ -88,53 +107,12 @@ fullHeightMinusTaskbar
 	taskbarHeight := world taskbar morphExtent y.
 	self morphExtent: (self morphExtent x) @ (world morphExtent y - taskbarHeight).! !
 
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:32:01'!
-moveLeftOf: aWindow
-	"Move this window to the left of aWindow and guarantee
-	that it will not extend past the left edge of the World."
-	| newX newY position |
-
-	position := aWindow morphPosition.
-	newX := position x - extent x max: 0.
-	newY := position y.	
-	self morphPosition: newX @ newY.! !
-
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:25:23'!
-moveRightOf: aWindow
-	"Move this window to the right of aWindow and guarantee
-	that it will not extend past the right edge of the World."
-	| newX newY position world worldWidth |
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/16/2025 11:04:28'!
+fullWidth
+	| world |
 
 	world := UISupervisor ui.
-	worldWidth := world morphExtent x.
-	position := aWindow morphPosition.
-	newX := position x + aWindow morphExtent x min: (worldWidth - extent x).
-	newY := position y.	
-	self morphPosition: newX @ newY.! !
-
-!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/15/2025 16:21:58'!
-moveTo: aSymbol
-	| newX newY taskbarHeight world worldHeight worldWidth |
-
-	world := UISupervisor ui.
-	worldWidth := world morphExtent x.
-	worldHeight := world morphExtent y.
-	taskbarHeight := world taskbar morphExtent y.
-
-	newX := aSymbol caseOf: {
-		[ #worldLeft ] -> [ 0 ].
-		[ #worldRight ] -> [ worldWidth - extent x ].
-		[ #worldXCenter ] -> [ (worldWidth / 2) - (extent x / 2) ].
-	} otherwise: [ location translation x ].
-	
-	newY := aSymbol caseOf: {
-		[ #worldTop ] -> [ 0 ].
-		[ #worldBottom ] -> [ worldHeight - extent y ].
-		[ #worldYCenter ] -> [ (worldHeight / 2) - (extent y / 2) ].
-		[ #taskbarTop ] -> [ worldHeight - taskbarHeight - self morphExtent y ].
-	} otherwise: [ location translation y ].
-	
-	self morphPosition: newX @ newY.! !
+	self morphExtent: (world morphExtent x) @ (extent y)! !
 
 !SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/14/2025 10:45:03'!
 percentHeight: aNumber
@@ -156,4 +134,70 @@ percentWidth: aNumber
 	world := UISupervisor ui.
 	self morphExtent: (world morphExtent x * aNumber) @ (self morphExtent y)
 ! !
+
+!SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/16/2025 11:15:41'!
+x: xLocation y: yLocation
+	"Move this window to a new location specified by xLocation and yLocation.
+	The arguments can be specific symbols or Associations where
+	the key is a specific symbol and the value is another window."
+	| newX newY taskbarHeight windowHeight windowWidth world worldHeight worldWidth |
+
+	world := UISupervisor ui.
+	worldWidth := world morphExtent x.
+	worldHeight := world morphExtent y.
+	taskbarHeight := world taskbar morphExtent y.
+	windowWidth := extent x.
+	windowHeight := extent y.
+
+	newX := xLocation caseOf: {
+		[ #worldLeft ] -> [ 0 ].
+		[ #worldRight ] -> [ worldWidth - windowWidth ].
+		[ #worldCenter ] -> [ (worldWidth / 2) - (windowWidth / 2) ].
+	} otherwise: [
+		xLocation isKindOf: Association ::
+			ifTrue: [
+				| targetWindow |
+				targetWindow := xLocation value.
+				xLocation key caseOf: {
+					[ #leftOf ] -> [ targetWindow morphPosition x - windowWidth ].
+					[ #rightOf ] -> [
+						targetWindow morphPosition x + targetWindow morphExtent x
+					].
+				} otherwise: nil.
+			]
+			ifFalse: nil
+	].
+	
+	newY := yLocation caseOf: {
+		[ #worldTop ] -> [ 0 ].
+		[ #worldBottom ] -> [ worldHeight - windowHeight ].
+		[ #worldCenter ] -> [ (worldHeight / 2) - (windowHeight / 2) ].
+		[ #taskbarTop ] -> [ worldHeight - taskbarHeight - windowHeight ].
+	} otherwise: [
+		yLocation isKindOf: Association ::
+			ifTrue: [
+				| targetWindow |
+				targetWindow := yLocation value.
+				yLocation key caseOf: {
+					[ #topOf ] -> [ targetWindow morphPosition y - windowHeight ].
+					[ #bottomOf ] -> [
+						targetWindow morphPosition y + targetWindow morphExtent y
+					].
+				} otherwise: nil.
+			]
+			ifFalse: nil
+	].
+	
+	"If newX or newY are not set, use their current values."
+	newX ifNil: [ newX := location translation x ].
+	newY ifNil: [ newY := location translation y ].
+	
+	"Ensure that using newX and newY will result in
+	the window being entirely inside the World."
+	newX < 0 ifTrue: [ newX := 0 ].
+	newX + windowWidth > worldWidth ifTrue: [ newX := worldWidth - windowWidth ].
+	newY < 0 ifTrue: [ newY := 0 ].
+	newY + windowHeight > worldHeight ifTrue: [ newY := worldHeight - windowHeight ].
+	
+	self morphPosition: newX @ newY.! !
 RMVSetup initialize!
