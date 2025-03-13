@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 11:22:00 am'!
+'From Cuis7.3 [latest update: #7067] on 12 March 2025 at 8:59:08 pm'!
 'Description '!
-!provides: 'RMVSetup' 1 44!
+!provides: 'RMVSetup' 1 46!
 !requires: 'LogAs' 1 1 nil!
 !requires: 'Switch' 1 1 nil!
 !requires: 'WindowManager' 1 11 nil!
@@ -45,9 +45,8 @@ coolDemo
 		percentHeight: 0.2;
 		x: #worldCenter y: #bottomOf -> target.! !
 
-!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/13/2025 13:00:46'!
+!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 3/4/2025 13:35:13'!
 initialize
-	| filePath stream |
 	
 	"Set preferences."
 	Utilities setAuthorName: 'R. Mark Volkmann' initials: 'rmv'.
@@ -56,17 +55,15 @@ initialize
 	WindowManager openAtCursor.
 	
 	"Add World background image."
-	Preferences at: #backgroundEffect put: #tile.
-	filePath := '../Cuis-Smalltalk-RMVSetup/altitude1600.jpg'.
-	stream := filePath asFileEntry readStream.
-	self runningWorld backgroundImageData: stream binary contentsOfEntireFile.
+	WindowManager tileImage: '../Cuis-Smalltalk-RMVSetup/altitude1600.jpg'.
 	
 	self openWindows.! !
 
-!RMVSetup class methodsFor: 'class initialization' stamp: 'RMV 2/16/2025 11:21:16'!
+!RMVSetup class methodsFor: 'class initialization' stamp: 'rmv 3/12/2025 20:59:04'!
 openWindows
 	"Open my preferred initial windows in the locations and sizes I prefer.
-	Specify size before location because the location calculation can depend on the size."
+	Specify size before location because the location calculation can depend on the size.
+	Most of the methods used here were added to the SystemWindow class."
 	| browser |
 	
 	browser := Browser open
