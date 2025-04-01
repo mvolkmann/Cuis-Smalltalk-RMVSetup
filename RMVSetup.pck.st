@@ -1,9 +1,10 @@
-'From Cuis7.3 [latest update: #7067] on 12 March 2025 at 8:59:08 pm'!
+'From Cuis7.3 [latest update: #7092] on 1 April 2025 at 11:30:44 am'!
 'Description '!
-!provides: 'RMVSetup' 1 46!
-!requires: 'LogAs' 1 1 nil!
+!provides: 'RMVSetup' 1 48!
 !requires: 'Switch' 1 1 nil!
+!requires: 'FeatureRequirer' 1 3 nil!
 !requires: 'WindowManager' 1 11 nil!
+!requires: 'LogAs' 1 1 nil!
 !requires: 'MethodFinder' 1 121 nil!
 !requires: 'SearchBrowser' 1 46 nil!
 SystemOrganization addCategory: #RMVSetup!
@@ -90,6 +91,21 @@ openWindows
 		x: #worldLeft y: #taskbarTop.
 			
 	browser activateWindow.! !
+
+!Collection methodsFor: '*RMVSetup' stamp: 'rmv 4/1/2025 11:29:23'!
+asOxfordCommaStringAnd
+	"Answer string created by converting elements to strings,
+	 separating them by commas, and
+	 adding the word 'and' before the last element."
+
+	^ self size caseOf: {
+		[ 0 ] -> [ '' ].
+		[ 1 ] -> [ self first asString ].
+		[ 2 ] -> [ self first asString, ' and ', self second asString ].
+	} otherwise: [
+		', ' join: (self allButLast collect: [:each | each asString]) ::
+			, ', and ', self last asString.
+	]! !
 
 !SystemWindow methodsFor: '*RMVSetup' stamp: 'RMV 2/16/2025 11:04:38'!
 fullHeight
